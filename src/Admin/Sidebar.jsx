@@ -14,7 +14,7 @@ const Sidebar = ({show,setShow}) => {
   ]
   return (
     <>  <div className="d-none d-md-flex flex-column text-white p-3 " 
-       style={{ width: "250px" , backgroundColor:'lightblue' }}>
+       style={{ width: "250px",height:"1100px", backgroundColor:'lightblue' }}>
         <h4 className="text-center text-black">Admin</h4><hr style={{color:"black"}}/>
         <Nav className="flex-column">
           {links.map((link,index)=>

@@ -1,53 +1,6 @@
 {
   "doctors": [
     {
-      "id": "3cdd",
-      "username": "Dhrumil Patel",
-      "email": "hitarthp29@gmail.com",
-      "password": "123456789",
-      "cpassword": "123456789",
-      "phone": "9913618010",
-      "gender": "Male",
-      "age": "40",
-      "clinicName": "Hariom clinic",
-      "clinicAddress": "Idar",
-      "specialization": "Neurologist",
-      "qualification": "MS (Master of Surgery)",
-      "experience": "45",
-      "fees": "500",
-      "profileimg": "http://res.cloudinary.com/dhrumil7/image/upload/v1742907345/Doctors/zvpetlkzrzlidjvwzz8s.png",
-      "identityproof": "http://res.cloudinary.com/dhrumil7/image/upload/v1742907347/Doctors/bkibckvcb9nukccgmyyb.png",
-      "degreeProof": "http://res.cloudinary.com/dhrumil7/image/upload/v1742907351/Doctors/l5ip1ztvojd4874l1kln.png",
-      "clinicRegProof": "http://res.cloudinary.com/dhrumil7/image/upload/v1742907357/Doctors/qak6ef4d9hijt4g8ewny.png",
-      "isDoctors": true,
-      "createdAt": "2025-03-25T12:55:57.227Z",
-      "status": "Accept"
-    },
-    {
-      "id": "f0a8",
-      "username": "Parekh",
-      "email": "p@gmail.com",
-      "password": "12345678",
-      "cpassword": "12345678",
-      "phone": "9525845126",
-      "gender": "Male",
-      "age": "40",
-      "clinicName": "Hope Women’s Health",
-      "clinicAddress": "Thaltej, Ahemdabad, Gujarat, 380015",
-      "specialization": "General Physician",
-      "qualification": "MBBS",
-      "experience": "10",
-      "fees": "500",
-      "profileimg": "http://res.cloudinary.com/dhrumil7/image/upload/v1743056041/Doctors/ou7zacumzkrg1cwil0cu.jpg",
-      "identityproof": "http://res.cloudinary.com/dhrumil7/image/upload/v1743056046/Doctors/ve79gaz5kf5kd9lbb1kj.webp",
-      "degreeProof": "http://res.cloudinary.com/dhrumil7/image/upload/v1743056051/Doctors/os4tnavtbaukxsfumztx.webp",
-      "clinicRegProof": "http://res.cloudinary.com/dhrumil7/image/upload/v1743056058/Doctors/m51abv76apsbyzmsl1pd.jpg",
-      "status": "Accept",
-      "isDoctors": true,
-      "createdAt": "2025-03-27T06:14:27.950Z",
-      "editedAt": "2025-03-27T09:36:55.234Z"
-    },
-    {
       "id": "f0a9",
       "username": "Shah",
       "email": "shah@gmail.com",
@@ -69,7 +22,7 @@
       "status": "Accept",
       "isDoctors": true,
       "createdAt": "2025-03-27T06:15:30.950Z",
-      "editedAt": "2025-03-27T09:37:49.457Z"
+      "editedAt": "2025-03-27T11:04:13.812Z"
     },
     {
       "id": "f0b0",
@@ -290,62 +243,87 @@
   ],
   "patients": [
     {
-      "id": "5d07",
-      "username": "hitarth",
-      "email": "hitarthp2999@gmail.com",
-      "password": "123456",
-      "cpassword": "123456",
-      "phone": "09913618010",
-      "gender": "Male",
-      "age": "23",
-      "isAdmin": false,
-      "createdAt": "2025-03-18T18:45:54.448Z"
-    },
-    {
       "email": "admin@gmail.com",
       "password": "admin123",
       "isAdmin": true,
       "id": "4d7c"
     },
     {
-      "id": "6ec2",
+      "id": "3541",
       "username": "Dhrumil Patel",
       "email": "d@gmail.com",
-      "password": "10101010",
-      "cpassword": "10101010",
-      "phone": "9512721508",
+      "password": "12312312",
+      "cpassword": "12312312",
+      "phone": "9512714508",
       "gender": "Male",
       "age": "25",
       "isPatients": true,
-      "createdAt": "2025-03-26T16:54:03.317Z"
+      "createdAt": "2025-03-27T11:15:58.366Z"
     }
   ],
   "slots": [
     {
       "doctor_id": "c5f6",
       "availableSlots": {
-        "Monday": [
-          "10:00 AM - 11:00 AM"
-        ]
+        "2025-03-26": {
+          "day": "Wednesday",
+          "slots": [
+            "9:00 AM - 10:00 AM"
+          ]
+        },
+        "2025-03-28": {
+          "day": "Friday",
+          "slots": [
+            "10:00 AM - 11:00 AM",
+            "2:00 PM - 3:00 PM",
+            "3:00 PM - 4:00 PM"
+          ]
+        }
       },
-      "id": "ae45"
+      "id": "9360"
     },
     {
-      "doctor_id": "f0a8",
+      "doctor_id": "f0a9",
       "availableSlots": {
-        "Monday": [
-          "9:00 AM - 10:00 AM",
-          "11:00 AM - 12:00 PM",
-          "2:00 PM - 3:00 PM"
-        ],
-        "Tuesday": [
-          "9:00 AM - 10:00 AM",
-          "11:00 AM - 12:00 PM",
-          "1:00 PM - 2:00 PM"
-        ]
+        "2025-03-28": {
+          "day": "Friday",
+          "slots": [
+            "9:00 AM - 10:00 AM",
+            "11:00 AM - 12:00 PM",
+            "2:00 PM - 3:00 PM"
+          ]
+        },
+        "2025-03-29": {
+          "day": "Saturday",
+          "slots": [
+            "10:00 AM - 11:00 AM",
+            "1:00 PM - 2:00 PM",
+            "2:00 PM - 3:00 PM"
+          ]
+        },
+        "2025-03-30": {
+          "day": "Sunday",
+          "slots": [
+            "10:00 AM - 11:00 AM",
+            "1:00 PM - 2:00 PM"
+          ]
+        }
       },
-      "id": "2c4a"
+      "id": "84ea"
     }
   ],
-  "appointments": []
+  "appointments": [
+    {
+      "id": "2a4d",
+      "date": "2025-03-28",
+      "slot": "11:00 AM - 12:00 PM",
+      "paymentMethod": "Pay on Counter"
+    },
+    {
+      "id": "33e7",
+      "date": "2025-03-28",
+      "slot": "2:00 PM - 3:00 PM",
+      "paymentMethod": "Pay on Counter"
+    }
+  ]
 }

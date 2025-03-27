@@ -6,6 +6,8 @@ import { toast } from 'react-toastify'
 
 const Drnavbar = () => {
 const redirect =  useNavigate()
+
+let {username:drname} = JSON.parse(sessionStorage.getItem("DocBook"))
   const handleLogout = ()=>{
     if(sessionStorage.getItem("DocBook") != null){
       sessionStorage.removeItem("DocBook")
@@ -20,7 +22,7 @@ const redirect =  useNavigate()
       <Navbar.Brand  className="ms-2 fw-bold">Doctor Panel</Navbar.Brand>
     </div>
     <div className="d-flex align-items-center">
-      <span className="text-black me-3">Welcome, Dr.</span>
+      <span className="text-black me-3">Welcome!! Dr. {drname}</span>
       <Button variant="outline-dark" onClick={handleLogout} >Logout</Button>
   </div>
   </Navbar>

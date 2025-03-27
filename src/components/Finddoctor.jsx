@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Button, Card, Col, Container,  Row, Modal, Form, InputGroup } from "react-bootstrap";
+import { Button, Card, Col, Container,  Row, Modal, Form, InputGroup, ListGroup } from "react-bootstrap";
 import {  MdVerified } from "react-icons/md";
 import { FaEye } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
 import { BiSearchAlt2 } from "react-icons/bi";
+import SlotSelectionModal from "./SlotSelectionModal";
+import DoctorProfileModal from "./DrProfile";
 
 const Finddoctor = () => {
   const [doctors, setDoctors] = useState([]);
@@ -16,15 +18,23 @@ const Finddoctor = () => {
   const [slots, setSlots] = useState([]);
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [showSlotModal, setShowSlotModal] = useState(false);
+  const [selectedCity, setSelectedCity] = useState("");
+  const [filteredDoctors, setFilteredDoctors] = useState([]);
 
+  const [selectedSpecialization, setSelectedSpecialization] = useState("");
+
+  
+  
   const getData = async () => {
     try {
       const res = await axios.get("http://localhost:1000/doctors");
       const doctorList = Array.isArray(res.data) ? res.data : res.data.doctors || [];
       setDoctors(doctorList);
+      setFilteredDoctors(doctorList);
     } catch (err) {
       console.error("Error fetching doctors:", err);
       setDoctors([]);
+      setFilteredDoctors([]);
     }
   };
 
@@ -43,6 +53,22 @@ const Finddoctor = () => {
     getSlots();
   }, []);
 
+  const filterDoctors = () => {
+    let updatedList = doctors;
+    if (selectedCity) {
+      updatedList = updatedList.filter((doctor) => doctor.city === selectedCity);
+    }
+    if (selectedSpecialization) {
+      updatedList = updatedList.filter((doctor) => doctor.specialization === selectedSpecialization);
+    }
+    setFilteredDoctors(updatedList);
+  };
+
+  useEffect(() => {
+    filterDoctors();
+  }, [selectedCity, selectedSpecialization]);
+
+
   const handleViewProfile = (doctor) => {
     setSelectedDoctor(doctor);
     setShowModal(true);
@@ -58,11 +84,15 @@ const Finddoctor = () => {
       return;
     }
 
+    
+
     setSelectedDoctor(doctor);
     const doctorSlots = slots.find(slot => slot.doctor_id === doctor.id);
     setSelectedSlots(doctorSlots ? doctorSlots.availableSlots : []);
     setShowSlotModal(true);
   };
+
+  const specializations = [...new Set(doctors.map(doc => doc.specialization))];
 
 
 
@@ -93,32 +123,21 @@ const Finddoctor = () => {
             <p className="text-secondary">Quickly connect with expert healthcare professionals.</p>
 
             <Row className="justify-content-center mt-4">
-              <Col xs={12} md={8} lg={6}>
+            <Col xs={12} md={8} lg={6}>
                 <InputGroup>
-                  <Form.Select>
+                  <Form.Select onChange={(e) => setSelectedCity(e.target.value)}>
                     <option value="">City</option>
                     <option value="Prahlad Nagar">Prahlad Nagar</option>
                     <option value="Gota">Gota</option>
                     <option value="Naroda">Naroda</option>
                   </Form.Select>
-                  <Form.Select>
-                    <option value="" disabled>Doctor / Specialization</option>
-                    <option>General Physician</option>
-                        <option>Cardiologist</option>
-                        <option>Dermatologist</option>
-                        <option>Neurologist</option>
-                        <option>Orthopedic Surgeon</option>
-                        <option>Pediatrician</option>
-                        <option>Psychiatrist</option>
-                        <option>ENT Specialist</option>
-                        <option>Gynecologist</option>
-                        <option>Dentist</option>
-                        <option>Urologist</option>
-                        <option>Radiologist</option>
-                        <option>Oncologist</option>
-                        <option>Ophthalmologist</option>
+                  <Form.Select onChange={(e) => setSelectedSpecialization(e.target.value)}>
+                    <option value="">Doctor / Specialization</option>
+                    {specializations.map((spec, index) => (
+                      <option key={index} value={spec}>{spec}</option>
+                    ))}
                   </Form.Select>
-                  <Button className="btn-warning text-dark">
+                  <Button className="btn-warning text-dark" onClick={filterDoctors}>
                     <BiSearchAlt2 /> Search
                   </Button>
                 </InputGroup>
@@ -127,36 +146,65 @@ const Finddoctor = () => {
           </motion.div>
         </Container>
       </div>
-        <p className="mt-5 fs-5 fw-bold">
-          Book appointments with minimum wait-time & verified doctor details
-        </p>
+      <Container fluid>
+        <p className="mt-5 fs-5 fw-bold">Book appointments with minimum wait-time & verified doctor details</p>
         <Row className="m-5">
-          {doctors.length > 0 && doctors.filter(doctor => doctor.status === "Accept").map((doctor, index) => (
-            <Col md={8} sm={12} key={index} className="mb-4">
-              <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
-                <Card className="d-flex flex-row align-items-center p-3 shadow-sm rounded-4 mb-2" style={{height:"250px"}}>
-                  <Card.Img variant="left" src={doctor.profileimg} className="me-3" style={{width: "150px", height: "150px", objectFit: "cover", borderRadius: "8px"}} />
-                  <Card.Body>
-                    <Card.Title className="fw-bold mb-1">Dr. {doctor.username}</Card.Title>
-                    <MdVerified className="mb-1" /> Medical Registration Verified
-                    <Card.Text className="text-muted mb-1">{doctor.specialization}</Card.Text>
-                    <Card.Text className="text-secondary">Consultation Fees {doctor.fees} </Card.Text>
-                    <Card.Text className="text-secondary">Clinic Address:-{doctor.clinicAddress}</Card.Text>
-                  </Card.Body>
-                  <Col md={3}>
-                    <Button variant="info" size="sm" className="me-2 mt-3" onClick={() => handleViewProfile(doctor)}>
-                      <FaEye /> View Profile
-                    </Button>
-                    <Button  size="sm" className="mt-3" style={{backgroundColor:" rgb(255, 240, 75)",border:"0px", color:"black"}} onClick={() => handleBookAppointment(doctor)}>
-                      Book Appointment
-                    </Button>
-                  </Col>
-                </Card>
-              </motion.div>
-            </Col>
-          ))}
+          <Col md={9}>
+            {doctors.length > 0 && doctors.filter(doctor => doctor.status === "Accept" && (!selectedSpecialization || doctor.specialization === selectedSpecialization)).map((doctor, index) => (
+              <Col md={11} sm={12} key={index} className="mb-4">
+                <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
+                  <Card className="d-flex flex-row align-items-center p-2 shadow-sm rounded-4 mb-2" style={{height:"250px"}}>
+                    <Card.Img variant="left" src={doctor.profileimg} className="me-3" style={{width: "150px", height: "200px", objectFit: "cover", borderRadius: "8px"}} />
+                    <Card.Body>
+                      <Card.Title className="fw-bold mb-1">Dr. {doctor.username}</Card.Title>
+                      <MdVerified className="mb-1" /> Medical Registration Verified
+                      <Card.Text className="text-muted mb-1">{doctor.specialization}</Card.Text>
+                      <Card.Text className="text-secondary">Consultation Fees {doctor.fees} </Card.Text>
+                      <Card.Text className="text-secondary">Clinic Address:- {doctor.clinicAddress}</Card.Text>
+                    </Card.Body>
+                    <Col md={3}>
+                      <Button variant="info" size="sm" className="me-2 mt-3" onClick={() => handleViewProfile(doctor)}>
+                        <FaEye /> View Profile
+                      </Button>
+                      <Button  size="sm" className="mt-3" style={{backgroundColor:"rgb(255, 240, 75)",border:"0px", color:"black"}} onClick={() => handleBookAppointment(doctor)}>
+                        Book Appointment
+                      </Button>
+                    </Col>
+                  </Card>
+                </motion.div>
+              </Col>
+            ))}
+          </Col>
+          <Col md={3} style={{border:"1px solid gray" , borderRadius:"8px" , padding:"30px"}} className="shadow-lg">
+            <h5 className="fw-bold">Filter by Specialization</h5>
+            <ListGroup>
+              <ListGroup.Item action onClick={() => setSelectedSpecialization("")} active={!selectedSpecialization}>All Specializations</ListGroup.Item>
+              {specializations.map((spec, index) => (
+                <ListGroup.Item key={index} action onClick={() => setSelectedSpecialization(spec)} active={selectedSpecialization === spec}>
+                  {spec}
+                </ListGroup.Item>
+              ))}
+                <h5 className="fw-bold mt-5">Filter by City</h5>
+                <ListGroup>
+                    <ListGroup.Item action onClick={() => setSelectedCity("")} active={!selectedCity}>
+                      All Cities
+                    </ListGroup.Item>
+                  {[...new Set(doctors.map((doc) => doc.city))].map((city, index) => (
+                    <ListGroup.Item
+                      key={index}
+                      action
+                      onClick={() => setSelectedCity(city)}
+                      active={selectedCity === city}
+                    >
+                      {city}
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+            </ListGroup>
+          </Col>
         </Row>
-
+      </Container>
+{/* 
         <Modal
           show={showModal}
           onHide={() => setShowModal(false)}
@@ -219,8 +267,6 @@ const Finddoctor = () => {
                         <strong>Clinic Address:</strong> {selectedDoctor.clinicAddress}
                       </Col>
                     </Row>
-
-
                   </Col>
                 </Row>
               </Card>
@@ -231,37 +277,23 @@ const Finddoctor = () => {
               Close
             </Button>
           </Modal.Footer>
-        </Modal>
+        </Modal> */}
+
+<DoctorProfileModal
+  show={showModal}
+  handleClose={() => setShowModal(false)}
+  doctor={selectedDoctor}
+/>
 
 
         {/* Slot Selection Modal */}
-        <Modal show={showSlotModal} onHide={() => setShowSlotModal(false)} size="lg" centered>
-          <Modal.Header closeButton>
-            <Modal.Title>Select an Appointment Slot</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {selectedSlots && Object.keys(selectedSlots).length > 0 ? (
-              Object.keys(selectedSlots).map((day, index) => (
-                <div key={index} className="mb-2">
-                  <h5>{day}</h5>
-                  {selectedSlots[day].map((slot, i) => (
-                    <Button key={i} variant="outline-warning" className="m-1">
-                      {slot}
-                    </Button>
-                  ))}
-                </div>
-              ))
-            ) : (
-              <p>No slots available for this doctor.</p>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button style={{backgroundColor:" rgb(255, 240, 75)",border:"0px",color:"black"}}>Book Appointment</Button>
-            <Button variant="secondary" onClick={() => setShowSlotModal(false)}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        <SlotSelectionModal
+  show={showSlotModal}
+  handleClose={() => setShowSlotModal(false)}
+  slots={selectedSlots}
+/>
+
+        
       </Container>
     </div>
   );

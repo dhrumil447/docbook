@@ -30,7 +30,7 @@ const ViewPatient = () => {
     if(window.confirm("are you sure to delete this??")){
       try{
         await axios.delete(`${import.meta.env.VITE_BASE_URL}/patients/${id}`)
-        toast.success("patient deleted successfully")
+        toast.success("product deleted successfully")
         setIsDeleted(!isDeleted)
       }
       catch(err){toast.error(err)}

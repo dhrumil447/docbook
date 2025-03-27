@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectdoctors, store_doctors } from '../redux/doctorSlice';
 import { Modal, Button, Card, Row, Col } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 const ViewDoctor = () => {
   const [selectedDoctor, setSelectedDoctor] = useState([]);
@@ -28,20 +29,22 @@ const ViewDoctor = () => {
     getData();
   }, []);
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:1000/doctors/${id}`);
-      getData();
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const handleDelete = async(id)=>{
+    if(window.confirm("are you sure to delete this??")){
+      try{
+        await axios.delete(`${import.meta.env.VITE_BASE_URL}/doctors/${id}`)
+        toast.success("doctor deleted successfully")
+        setIsDeleted(!isDeleted)
+      }
+      catch(err){toast.error(err)}
+  }
+}
 
   const handleApprove = async (id) => {
     try {
       await axios.patch(`http://localhost:1000/doctors/${id}`, { status: "Accept" });
       getData();
-      alert("Doctor approved!");
+      toast.success("Doctor approved!");
     } catch (err) {
       console.log(err);
     }

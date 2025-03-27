@@ -1,12 +1,12 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { Button, Container, Row, Col, Card } from "react-bootstrap";
+import { Button, Container, Row, Col, Card, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 const DrProfile = () => {
-  const [selectedDays, setSelectedDays] = useState([]);
-  const [daySlots, setDaySlots] = useState({});
-  const [activeDay, setActiveDay] = useState(null);
+  const [selectedDates, setSelectedDates] = useState([]);
+  const [dateSlots, setDateSlots] = useState({});
+  const [activeDate, setActiveDate] = useState(null);
   const [existingSlotsId, setExistingSlotsId] = useState(null);
 
   const timeSlots = [
@@ -31,8 +31,8 @@ const DrProfile = () => {
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/slots?doctor_id=${doctorId}`);
         if (response.data.length > 0) {
           setExistingSlotsId(response.data[0].id);
-          setDaySlots(response.data[0].availableSlots || {});
-          setSelectedDays(Object.keys(response.data[0].availableSlots || {}));
+          setDateSlots(response.data[0].availableSlots || {});
+          setSelectedDates(Object.keys(response.data[0].availableSlots || {}));
         }
       } catch (error) {
         console.error("Error fetching slots:", error);
@@ -42,38 +42,40 @@ const DrProfile = () => {
     fetchSlots();
   }, [doctorId]);
 
-  const getCurrentDate = () => {
-    const today = new Date();
-    return today.toISOString().split("T")[0]; // YYYY-MM-DD format
+  const getDayFromDate = (date) => {
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const dayIndex = new Date(date).getDay();
+    return daysOfWeek[dayIndex];
   };
 
-  const toggleDaySelection = (day) => {
-    if (selectedDays.includes(day)) {
-      setSelectedDays(selectedDays.filter((d) => d !== day));
-      const newSlots = { ...daySlots };
-      delete newSlots[day];
-      setDaySlots(newSlots);
-      setActiveDay(null);
-    } else {
-      setSelectedDays([...selectedDays, day]);
-      setDaySlots({
-        ...daySlots,
-        [day]: { date: getCurrentDate(), slots: [] },
-      });
-      setActiveDay(day);
+  const addDate = (event) => {
+    const date = event.target.value;
+    if (!date) return;
+
+    if (selectedDates.includes(date)) {
+      toast.warn("Date already selected!");
+      return;
     }
+
+    const day = getDayFromDate(date);
+    setSelectedDates([...selectedDates, date]);
+    setDateSlots({
+      ...dateSlots,
+      [date]: { day, slots: [] },
+    });
+    setActiveDate(date);
   };
 
-  const toggleSlotSelection = (day, slot) => {
-    if (!daySlots[day]) return;
-    const slots = daySlots[day].slots || [];
+  const toggleSlotSelection = (date, slot) => {
+    if (!dateSlots[date]) return;
+    const slots = dateSlots[date].slots || [];
     const updatedSlots = slots.includes(slot)
       ? slots.filter((s) => s !== slot)
       : [...slots, slot];
 
-    setDaySlots({
-      ...daySlots,
-      [day]: { ...daySlots[day], slots: updatedSlots },
+    setDateSlots({
+      ...dateSlots,
+      [date]: { ...dateSlots[date], slots: updatedSlots },
     });
   };
 
@@ -85,7 +87,7 @@ const DrProfile = () => {
 
     const data = {
       doctor_id: doctorId,
-      availableSlots: daySlots,
+      availableSlots: dateSlots,
     };
 
     try {
@@ -107,21 +109,26 @@ const DrProfile = () => {
 
   return (
     <Container className="mt-3 text-center">
-      <h4 className="fw-bold mb-3">Set Your Available Days & Time Slots</h4>
+      <h4 className="fw-bold mb-3">Set Your Available Dates & Time Slots</h4>
       <Card className="p-3 mb-3 shadow-sm">
         <Row className="g-2">
-          {/* Available Days Selection */}
+          {/* Select Date */}
           <Col xs={12} md={4}>
-            <h6 className="fw-bold mb-3 text-center">Available Days</h6>
+            <h6 className="fw-bold mb-3 text-center">Select a Date</h6>
+            <Form.Group className="text-center">
+              <Form.Control type="date" onChange={addDate} />
+            </Form.Group>
+
+            <h6 className="fw-bold mt-3 text-center">Selected Dates</h6>
             <Row className="g-2 flex-column align-items-center">
-              {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
-                <Col xs={10} key={day} className="mb-1">
+              {selectedDates.map((date) => (
+                <Col xs={10} key={date} className="mb-1">
                   <Button
-                    variant={selectedDays.includes(day) ? "success" : "outline-primary"}
+                    variant={activeDate === date ? "success" : "outline-primary"}
                     className="w-100"
-                    onClick={() => toggleDaySelection(day)}
+                    onClick={() => setActiveDate(date)}
                   >
-                    {day}
+                    {date} ({dateSlots[date]?.day})
                   </Button>
                 </Col>
               ))}
@@ -130,16 +137,16 @@ const DrProfile = () => {
 
           {/* Time Slot Selection */}
           <Col xs={12} md={4}>
-            {activeDay && (
+            {activeDate && (
               <>
-                <h6 className="fw-bold mb-3 text-center">Time Slots for {activeDay}</h6>
+                <h6 className="fw-bold mb-3 text-center">Time Slots for {activeDate} ({dateSlots[activeDate]?.day})</h6>
                 <Row className="g-2 flex-column align-items-center">
                   {timeSlots.map((slot) => (
                     <Col xs={10} key={slot} className="mb-2">
                       <Button
-                        variant={daySlots[activeDay]?.slots?.includes(slot) ? "success" : "outline-primary"}
+                        variant={dateSlots[activeDate]?.slots?.includes(slot) ? "success" : "outline-primary"}
                         className="w-100"
-                        onClick={() => toggleSlotSelection(activeDay, slot)}
+                        onClick={() => toggleSlotSelection(activeDate, slot)}
                       >
                         {slot}
                       </Button>
@@ -154,15 +161,15 @@ const DrProfile = () => {
           <Col xs={12} md={4}>
             <h6 className="fw-bold mb-3 text-center">Selected Schedule</h6>
             <Card className="p-3 shadow-sm">
-              {selectedDays.length > 0 ? (
-                selectedDays.map((day) => (
-                  <div key={day} className="mb-3">
-                    <strong>{day} ({daySlots[day]?.date || "Unknown Date"}):</strong>
-                    {daySlots[day]?.slots?.length > 0 ? daySlots[day].slots.join(", ") : "No slots selected"}
+              {selectedDates.length > 0 ? (
+                selectedDates.map((date) => (
+                  <div key={date} className="mb-3">
+                    <strong>{date} ({dateSlots[date]?.day}):</strong>
+                    {dateSlots[date]?.slots?.length > 0 ? dateSlots[date].slots.join(", ") : "No slots selected"}
                   </div>
                 ))
               ) : (
-                <p>No days selected</p>
+                <p>No dates selected</p>
               )}
             </Card>
           </Col>
